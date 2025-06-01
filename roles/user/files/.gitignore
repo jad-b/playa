@@ -1,6 +1,0 @@
-# Ignore potential private keys
-*.iml
-*.pem
-id_rsa*
-
-.factorypath
