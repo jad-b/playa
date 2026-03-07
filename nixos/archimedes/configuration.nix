@@ -11,6 +11,8 @@
       ./hardware-configuration.nix
     ];
 
+  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+
   # Desktop
   ########################################
   # Enable the X11 windowing system.
@@ -98,6 +100,11 @@
     openFirewall = true;
     group = "media";
   };
+  services.prowlarr = {
+   enable = true;
+   openFirewall = true;
+   # group = "media";
+ };
 
 
   # Lab Infrastructure 
@@ -152,7 +159,8 @@
           "9091:9091"
         ];
         volumes = [
-          "/media/:/data"
+          "/data/torrents:/data/torrents"
+          "/data/torrents/incomplete:/data/torrents/incomplete"
 	  "/etc/transmission/:/config"
         ];
         environment = {
@@ -180,6 +188,9 @@
     # Create the default bridge network for podman
     defaultNetwork.settings.dns_enabled = false;
   };
+
+  # Networking
+  ########################################
   networking.hostId = "a9535e5b";
   networking.hostName = "archimedes"; # Define your hostname.
   networking.networkmanager.enable = true;
@@ -194,6 +205,10 @@
     openFirewall = true;
     settings.X11Forwarding = true;
   };
+
+  # Storage
+  ########################################
+  services.zfs.autoScrub.enable = true;
 
 
   # OS Administration 
@@ -225,9 +240,14 @@
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
+  boot.loader.systemd-boot.extraFiles = {
+    "loader/keys/luks.key".source = "/etc/cryptsetup-keys.d/luks.key";
+  };
   boot.initrd.luks.devices."luks-7f443307-a8ec-48b0-9939-8cec271bb9a8".device = "/dev/disk/by-uuid/7f443307-a8ec-48b0-9939-8cec271bb9a8";
   boot.supportedFilesystems = [ "zfs" ];
+  boot.kernelParams = [ "nohibernate" ];
   boot.zfs.forceImportRoot = false;
+  boot.zfs.extraPools = [ "mediapool" ];
 
   system.autoUpgrade.enable = true;
   system.autoUpgrade.allowReboot = true;
