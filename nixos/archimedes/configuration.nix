@@ -2,24 +2,42 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 
 {
   imports =
-    [ <nixos-hardware/dell/xps/15-9560>
+    [ # <nixos-hardware/dell/xps/15-9560>
+      # For building VMs with flakes
+      # "${modulesPath}/virtualisation/qemu-vm.nix"
       # Include the results of the hardware scan.
       ./hardware-configuration.nix
     ];
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
+  # virtualisation.forwardPorts = [
+  #   {
+  #     from = "host";
+  #     host.port = 2221;
+  #     guest.port = 22;
+  #   }
+  # ];
+  virtualisation.vmVariant = {
+    # following configuration is added only when building VM with build-vm
+    virtualisation = {
+      memorySize = 2048; # Use 2048MiB memory.
+      cores = 2;
+      graphics = false;
+    };
+  };
+
   # Desktop
   ########################################
   # Enable the X11 windowing system.
   services.xserver.enable = true;
   # Enable the GNOME Desktop Environment.
-  services.xserver.displayManager.gdm.enable = true;
-  services.xserver.desktopManager.gnome.enable = true;
+  services.displayManager.gdm.enable = true;
+  services.desktopManager.gnome.enable = true;
   services.displayManager.autoLogin.enable = true;
 
   # Configure keymap in X11
@@ -229,9 +247,9 @@
     LC_TIME = "en_US.UTF-8";
   };
 
-  services.logind.lidSwitch = "poweroff";
-  services.logind.lidSwitchExternalPower = "lock";
-  services.logind.lidSwitchDocked = "ignore";
+  services.logind.settings.Login.HandleLidSwitch = "poweroff";
+  services.logind.settings.Login.HandleLidSwitchExternalPower = "lock";
+  services.logind.settings.Login.HandleLidSwitchDocked = "ignore";
   systemd.targets.sleep.enable = false;
   systemd.targets.suspend.enable = false;
   systemd.targets.hibernate.enable = false;
@@ -240,10 +258,10 @@
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
-  boot.loader.systemd-boot.extraFiles = {
-    "loader/keys/luks.key".source = "/etc/cryptsetup-keys.d/luks.key";
-  };
-  boot.initrd.luks.devices."luks-7f443307-a8ec-48b0-9939-8cec271bb9a8".device = "/dev/disk/by-uuid/7f443307-a8ec-48b0-9939-8cec271bb9a8";
+  # boot.loader.systemd-boot.extraFiles = {
+  #   "loader/keys/luks.key".source = "/etc/cryptsetup-keys.d/luks.key";
+  # };
+  # boot.initrd.luks.devices."luks-7f443307-a8ec-48b0-9939-8cec271bb9a8".device = "/dev/disk/by-uuid/7f443307-a8ec-48b0-9939-8cec271bb9a8";
   boot.supportedFilesystems = [ "zfs" ];
   boot.kernelParams = [ "nohibernate" ];
   boot.zfs.forceImportRoot = false;
