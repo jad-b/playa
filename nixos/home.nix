@@ -17,8 +17,8 @@
 
   # The home.packages option allows you to install Nix packages into your
   # environment.
-  home.packages = [
-    pkgs.tmux
+  home.packages = with pkgs; [
+    tmux
 
     # # It is sometimes useful to fine-tune packages, for example, by applying
     # # overrides. You can do that directly here, just don't forget the
@@ -70,5 +70,5 @@
   };
 
   # Let Home Manager install and manage itself.
-  programs.home-manager.enable = true;
 }
+  programs.home-manager.enable = true;
