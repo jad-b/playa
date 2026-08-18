@@ -25,9 +25,8 @@
 
     # programming
     cargo
-    neovim
-
     # shell utilities
+
     fzf
     gnupg
     jq
@@ -83,4 +82,12 @@
 
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
-}
+  programs.neovim = {
+    enable = true;
+    defaultEditor = true;
+    viAlias = true;
+    vimAlias = true;
+    withRuby = false;
+    withPython3 = false;
+  }
+  };
