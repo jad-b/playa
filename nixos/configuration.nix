@@ -3,12 +3,12 @@
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
 { config, pkgs, ... }:
-
 {
-  imports =
-    [ # Include the results of the hardware scan.
-      ./hardware-configuration.nix
-    ];
+
+  imports = [
+    # Include the results of the hardware scan.
+    ./hardware-configuration.nix
+  ];
 
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
@@ -17,7 +17,8 @@
   # Use latest kernel.
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
-  boot.initrd.luks.devices."luks-2c66f21c-f35d-406f-abc9-2bf63e973cc5".device = "/dev/disk/by-uuid/2c66f21c-f35d-406f-abc9-2bf63e973cc5";
+  boot.initrd.luks.devices."luks-2c66f21c-f35d-406f-abc9-2bf63e973cc5".device =
+    "/dev/disk/by-uuid/2c66f21c-f35d-406f-abc9-2bf63e973cc5";
   networking.hostName = "locke"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
@@ -81,13 +82,17 @@
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
 
-  # Define a user account. Don't forget to set a password with ‘passwd’.
+  users.groups.jdb = { };
   users.users."jdb" = {
     isNormalUser = true;
     description = "jdb";
-    extraGroups = [ "networkmanager" "wheel" ];
+    extraGroups = [
+      "networkmanager"
+      "jdb"
+      "wheel"
+    ];
     packages = with pkgs; [
-    #  thunderbird
+      #  thunderbird
     ];
   };
 
@@ -98,13 +103,19 @@
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  nix.settings.experimental-features = [
+    "nix-command"
+    "flakes"
+  ];
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
     git
     jq
+    proton-vpn
+    protonmail-desktop
     neovim
+    spotify
     wget
   ];
   environment.variables.EDITOR = "nvim";
@@ -117,17 +128,32 @@
   #   enableSSHSupport = true;
   # };
 
-  # List services that you want to enable:
+  # Resilio Sync
+  #########################################
   services.resilio = {
     enable = true;
+    checkForUpdates = false;
+    deviceName = "locke";
+
     enableWebUI = true;
-    checkForUpdates = true;
+    httpListenAddr = "127.0.0.1";
+    httpListenPort = 8888;
     directoryRoot = "/home/jdb";
+
+    listeningPort = 4444;
     downloadLimit = 0;
     uploadLimit = 0;
-    deviceName = "locke";
-    listeningPort = 4444;
   };
+  users.users."rslsync" = {
+    isSystemUser = true;
+    extraGroups = [
+      "jdb"
+      "rslsync"
+    ];
+  };
+  systemd.tmpfiles.rules = [
+    "Z /home/jdb 0775 jdb jdb -"
+  ];
 
   # Enable the OpenSSH daemon.
   # services.openssh.enable = true;

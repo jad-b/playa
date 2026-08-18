@@ -19,6 +19,7 @@
   # environment.
   home.packages = with pkgs; [
     # apps
+    libreoffice-fresh
     obsidian
     spotify-player
 
