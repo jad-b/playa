@@ -1,8 +1,4 @@
-{ config, pkgs, ... }:
-let
-  cfgs = "${config.home.homeDirectory}/Backups/configs";
-  ln = src: config.lib.file.mkOutOfStoreSymlink src;
-in
+{ lib, pkgs, ... }:
 {
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
@@ -22,8 +18,6 @@ in
   # environment.
   home.packages = with pkgs; [
     # apps
-    libreoffice-fresh
-    obsidian
     spotify-player
 
     # programming
@@ -50,7 +44,6 @@ in
   ];
 
   xdg.enable = true;
-  xdg.configFile."nvim".source = ln "${cfgs}/nvim.lazy";
 
   # Home Manager can also manage your environment variables through
   # 'home.sessionVariables'. These will be explicitly sourced when using a
