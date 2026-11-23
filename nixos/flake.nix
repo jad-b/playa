@@ -38,6 +38,14 @@
           nixos-wsl.nixosModules.default
           ./wsl-nixos/configuration.nix
         ];
+	locke-iso = mkHost [
+          "${nixpkgs}/nixos/modules/installer/cd-dvd/installation-cd-graphical-gnome.nix"
+	  ({ pkgs, modulesPath, ... }: {
+	    isoImage.squashfsCompression = "zstd";
+  	    boot.zfs.forceImportRoot = false;
+          })
+          ./locke/configuration.nix
+        ];
       };
     };
 }

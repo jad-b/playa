@@ -1,22 +1,37 @@
 # Native machine settings; shared settings live one directory above.
-{ pkgs, ... }:
+{ config, lib, pkgs, ... }:
+let
+  zfsCompatibleKernelPackages = lib.filterAttrs (
+    name: kernelPackages:
+    (builtins.match "linux_[0-9]+_[0-9]+" name) != null
+    && (builtins.tryEval kernelPackages).success
+    && (!kernelPackages.${config.boot.zfs.package.kernelModuleAttribute}.meta.broken)
+  ) pkgs.linuxKernel.packages;
+  latestKernelPackage = lib.last (
+    lib.sort (a: b: (lib.versionOlder a.kernel.version b.kernel.version)) (
+      builtins.attrValues zfsCompatibleKernelPackages
+    )
+  );
+in
 {
-  imports = [ ../hardware-configuration.nix ];
+  imports = [ ./hardware-configuration.nix ];
   home-manager.users.jdb = import ./home.nix;
 
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
-  boot.kernelPackages = pkgs.linuxPackages_latest;
-  boot.initrd.luks.devices."luks-2c66f21c-f35d-406f-abc9-2bf63e973cc5".device =
-    "/dev/disk/by-uuid/2c66f21c-f35d-406f-abc9-2bf63e973cc5";
+  # Note this might jump back and forth as kernels are added or removed.
+  boot.kernelPackages = latestKernelPackage;
+  boot.zfs.forceImportRoot = false;
+  # boot.initrd.luks.devices."luks-2c66f21c-f35d-406f-abc9-2bf63e973cc5".device =
+  #  "/dev/disk/by-uuid/2c66f21c-f35d-406f-abc9-2bf63e973cc5";
 
   networking.hostName = "locke";
   networking.networkmanager.enable = true;
   users.users.jdb.extraGroups = [ "networkmanager" ];
 
   services.xserver.enable = true;
-  services.xserver.displayManager.gdm.enable = true;
-  services.xserver.desktopManager.gnome.enable = true;
+  services.displayManager.gdm.enable = true;
+  services.desktopManager.gnome.enable = true;
   services.xserver.xkb = { layout = "us"; variant = ""; };
   services.printing.enable = true;
   services.pulseaudio.enable = false;

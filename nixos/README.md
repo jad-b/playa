@@ -3,26 +3,72 @@
 ===
 
 The flake shares system settings in `configuration.nix` and command-line/Home
-Manager settings in `home.nix`. Each host configuration should expect to provide
-overrides and additions to these files. Machine-specific configs should also 
-include a `hardware-configuration.nix` in their folder.
-
+Manager settings in `home.nix`. 
 
 
 ## Commands 
 
-Run commands from this directory. Flakes must be enabled; add
-`--extra-experimental-features 'nix-command flakes'` to `nix`, or pass `--option
-experimental-features 'nix-command flakes'` to `nixos-rebuild` for the first
-run.
+All commands should be run from this directory. 
 
-```sh # Build without changing the running machine. nix build .#<host>
+### Per-host setup 
+
+Flakes must be enabled: 
+add `--extra-experimental-features 'nix-command flakes'` to `nix`, 
+or pass `--option experimental-features 'nix-command flakes'` 
+to `nixos-rebuild` for the first run.
+
+#### Rescan the hardware configuration
+
+Important to do if the disk/filesystem setup changes, such as enabling LUKS.
+
+```sh
+sudo nixos-generate-config --show-hardware-config > <host>/hardware-configuration.nix
+```
+
+### Development and testing
+
+```sh
+# Build without changing the running machine. 
+nix build .#<host>
 
 # Build & apply the configuration 
 sudo nixos-rebuild switch --flake .#<host>
 
-# Update flakes nix flake update 
+# Update flakes 
+nix flake update 
 ```
+
+### ISO Generation 
+Generate: 
+
+```sh
+nix build .#nixosConfigurations.locke-iso.config.system.build.isoImage
+```
+
+Test in a VM:
+
+```sh
+nix-shell -p qemu && \
+  qemu-system-x86_64 -enable-kvm -m 4G -cdrom result/iso/nixos-*.iso
+```
+
+Write to a USB:
+```sh
+# Find your USB drive
+lsblk | grep '/media'
+
+# Unmount it
+sudo umount /dev/sdX*
+
+# Write the ISO to it
+sudo dd \
+    bs=4M conv=fsync oflag=direct status=progress \
+    if=$(ls -t result/iso/nixos-*.iso | head -n 1) \
+    of=/dev/sda                                      # typically sda
+```
+
+[Creating a live NixOS live CD](https://nixos.wiki/wiki/Creating_a_NixOS_live_CD)
+|[Creating bootable USB flash drive from a Terminal on Linux](https://nixos.org/manual/nixos/stable/#sec-booting-from-usb-linux)
 
 ### WSL-specific considerations 
 
@@ -45,7 +91,6 @@ To recover the previous system generation from PowerShell:
 wsl -d NixOS -u root -- sh -lc 'nixos-rebuild switch --rollback'
 wsl --terminate NixOS 
 ```
-
 
 Initialize the account's password:
 
