@@ -1,8 +1,0 @@
----
-# 'bash -s -- ...' allows you to pass positional args to the piped script
-- shell: "curl https://sh.rustup.rs -sSf | bash -s -- -y"
-
-- command: "/home/{{ansible_user}}/.cargo/bin/cargo install {{item}}"
-  with_items:
-    - ripgrep
-  ignore_errors: true

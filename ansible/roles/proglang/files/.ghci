@@ -1,5 +1,0 @@
-:set -fwarn-unused-binds -fwarn-unused-imports -fwarn-orphans
-:set -isrc
-:set prompt "λ> "
-:def hoogle \x -> return $ ":!hoogle \"" ++ x ++ "\""
-:def doc \x -> return $ ":!hoogle --info \"" ++ x ++ "\""

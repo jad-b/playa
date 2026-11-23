@@ -1,7 +1,0 @@
----
-- name: Provision an Ubuntu machine for development
-  hosts: 127.0.0.1
-  roles:
-    - {role: system, tags: ["system"]}
-    - {role: user, tags: ["user"]}
-    - {role: proglang, tags: ["proglang"]}
