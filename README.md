@@ -49,7 +49,7 @@ Test in a VM:
 
 ```sh
 nix-shell -p qemu && \
-  qemu-system-x86_64 -enable-kvm -m 4G -cdrom result/iso/nixos-*.iso
+  qemu-system-x86_64 -enable-kvm -m 4G -cdrom $(ls -t result/iso/nixos-*.iso | head -n 1)
 ```
 
 Write to a USB:

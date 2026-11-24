@@ -40,9 +40,12 @@
         ];
 	locke-iso = mkHost [
           "${nixpkgs}/nixos/modules/installer/cd-dvd/installation-cd-graphical-gnome.nix"
-	  ({ pkgs, modulesPath, ... }: {
-	    isoImage.squashfsCompression = "zstd";
-  	    boot.zfs.forceImportRoot = false;
+          # Provide an initial copy of the NixOS channel so that the user
+          # doesn't need to run "nix-channel --update" first.
+	  # "${nixpkgs}/nixos/modules/installer/cd-dvd/channel.nix"
+          ({ pkgs, modulesPath, ... }: {
+            isoImage.squashfsCompression = "zstd";
+            boot.zfs.forceImportRoot = false;
           })
           ./locke/configuration.nix
         ];
