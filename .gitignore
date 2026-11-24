@@ -1,4 +1,4 @@
 *.retry
 
-nixos/result
+result/
 *.qcow2
