@@ -1,5 +1,8 @@
-{ lib, pkgs, ... }:
-{
+{ config, pkgs, ... }:
+let
+  cfgs = "./dotfiles";
+  ln = src: config.lib.file.mkOutOfStoreSymlink src;
+in {
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
   home.username = "jdb";
@@ -19,6 +22,8 @@
   home.packages = with pkgs; [
     # apps
     spotify-player
+    libreoffice-fresh 
+    obsidian 
 
     # programming
     cargo
@@ -44,6 +49,17 @@
   ];
 
   xdg.enable = true;
+  xdg.configFile."nvim".source = ln "${cfgs}/nvim.lazy";
+  home.file = {
+    ".bash_aliases".source = ln "./dotfiles/.bash_aliases";
+    ".bash_profile".source = ln "./dotfiles/.bash_profile";
+    ".bashrc".source = ln "./dotfiles/.bashrc";
+    ".envrc".source = ln "./dotfiles/.envrc";
+    ".gitconfig".source = ln "./dotfiles/.gitconfig";
+    ".gitignore".source = ln "./dotfiles/.gitignore";
+    ".inputrc".source = ln "./dotfiles/.inputrc";
+    ".tmux.conf".source = ln "./dotfiles/.tmux.conf";
+  };
 
   # Home Manager can also manage your environment variables through
   # 'home.sessionVariables'. These will be explicitly sourced when using a
