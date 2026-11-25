@@ -3,19 +3,26 @@
 ===
 
 The flake shares system settings in `configuration.nix` and command-line/Home
-Manager settings in `home.nix`. 
+Manager settings in `home.nix`.
 
+## Prerequisite setup
 
-## Commands 
+What you have to do _before_ you can get NixOS to do the rest of the work.
 
-All commands should be run from this directory. 
+```sh
+# Download playa
+nix-shell -p git just \
+  && mkdir -p ~/src \
+  && git clone git@github.com:jad-b/playa.git ~/src \
+  && cd ~/src/playa \
+  && just rebuild $".#{{host}}"
+```
 
-### Per-host setup 
+## Commands
 
-Flakes must be enabled: 
-add `--extra-experimental-features 'nix-command flakes'` to `nix`, 
-or pass `--option experimental-features 'nix-command flakes'` 
-to `nixos-rebuild` for the first run.
+All commands should be run from this directory.
+
+### Per-host setup
 
 #### Rescan the hardware configuration
 
@@ -28,18 +35,19 @@ sudo nixos-generate-config --show-hardware-config > <host>/hardware-configuratio
 ### Development and testing
 
 ```sh
-# Build without changing the running machine. 
+# Build without changing the running machine.
 nix build .#<host>
 
-# Build & apply the configuration 
+# Build & apply the configuration
 sudo nixos-rebuild switch --flake .#<host>
 
-# Update flakes 
-nix flake update 
+# Update flakes
+nix flake update
 ```
 
-### ISO Generation 
-Generate: 
+### ISO Generation
+
+Generate:
 
 ```sh
 nix build .#nixosConfigurations.locke-iso.config.system.build.isoImage
@@ -53,6 +61,7 @@ nix-shell -p qemu && \
 ```
 
 Write to a USB:
+
 ```sh
 # Find your USB drive
 lsblk | grep '/media'
@@ -70,7 +79,7 @@ sudo dd \
 [Creating a live NixOS live CD](https://nixos.wiki/wiki/Creating_a_NixOS_live_CD)
 |[Creating bootable USB flash drive from a Terminal on Linux](https://nixos.org/manual/nixos/stable/#sec-booting-from-usb-linux)
 
-### WSL-specific considerations 
+### WSL-specific considerations
 
 This machine's `/etc/nixos` points to that checkout's `nixos` directory; the
 initial configuration is preserved in `/etc/nixos.before-playa`. The hostname
@@ -81,21 +90,21 @@ target.
 
 After the first WSL activation, restart that distribution from PowerShell:
 
-```powershell 
-wsl --terminate NixOS wsl -d NixOS 
+```powershell
+wsl --terminate NixOS wsl -d NixOS
 ```
 
 To recover the previous system generation from PowerShell:
 
-```powershell 
+```powershell
 wsl -d NixOS -u root -- sh -lc 'nixos-rebuild switch --rollback'
-wsl --terminate NixOS 
+wsl --terminate NixOS
 ```
 
 Initialize the account's password:
 
-```powershell 
-wsl -d NixOS -u root -- sh -lc 'passwd jdb' 
+```powershell
+wsl -d NixOS -u root -- sh -lc 'passwd jdb'
 ```
 
 The local checkout can use Windows OpenSSH and the existing Windows key through

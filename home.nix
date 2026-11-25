@@ -17,6 +17,8 @@ in {
   # release notes.
   home.stateVersion = "25.05"; # Please read the comment before changing.
 
+  fonts.fontconfig.enable = true;
+
   # The home.packages option allows you to install Nix packages into your
   # environment.
   home.packages = with pkgs; [
@@ -25,9 +27,14 @@ in {
     libreoffice-fresh 
     obsidian 
 
+    # fonts
+    nerd-fonts.jetbrains-mono
+
     # programming
     cargo
-    # gcc
+    gcc
+    just
+    nodejs
 
     # shell utilities
     fzf
@@ -46,6 +53,7 @@ in {
     pciutils
     strace
     usbutils
+    unzip
   ];
 
   xdg.enable = true;
