@@ -22,6 +22,7 @@
           ./configuration.nix # Common to all hosts
           home-manager.nixosModules.home-manager
           {
+	    home-manager.backupFileExtension = "bak";
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
             home-manager.users.jdb = import ./home.nix;

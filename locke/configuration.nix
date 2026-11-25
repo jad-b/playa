@@ -15,7 +15,6 @@ let
 in
 {
   imports = [ ./hardware-configuration.nix ];
-  home-manager.users.jdb = import ./home.nix;
 
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;

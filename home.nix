@@ -1,6 +1,6 @@
 { config, pkgs, ... }:
 let
-  cfgs = "./dotfiles";
+  cfgs = "${config.home.homeDirectory}/src/playa/dotfiles";
   ln = src: config.lib.file.mkOutOfStoreSymlink src;
 in {
   # Home Manager needs a bit of information about you and the paths it should
@@ -51,14 +51,14 @@ in {
   xdg.enable = true;
   xdg.configFile."nvim".source = ln "${cfgs}/nvim.lazy";
   home.file = {
-    ".bash_aliases".source = ln "./dotfiles/.bash_aliases";
-    ".bash_profile".source = ln "./dotfiles/.bash_profile";
-    ".bashrc".source = ln "./dotfiles/.bashrc";
-    ".envrc".source = ln "./dotfiles/.envrc";
-    ".gitconfig".source = ln "./dotfiles/.gitconfig";
-    ".gitignore".source = ln "./dotfiles/.gitignore";
-    ".inputrc".source = ln "./dotfiles/.inputrc";
-    ".tmux.conf".source = ln "./dotfiles/.tmux.conf";
+    ".bash_aliases".source = ln "${cfgs}/.bash_aliases";
+    ".bash_profile".source = ln "${cfgs}/.bash_profile";
+    ".bashrc".source = ln "${cfgs}/.bashrc";
+    ".envrc".source = ln "${cfgs}/.envrc";
+    ".gitconfig".source = ln "${cfgs}/.gitconfig";
+    ".gitignore".source = ln "${cfgs}/.gitignore";
+    ".inputrc".source = ln "${cfgs}/.inputrc";
+    ".tmux.conf".source = ln "${cfgs}/.tmux.conf";
   };
 
   # Home Manager can also manage your environment variables through
