@@ -22,7 +22,7 @@
           ./configuration.nix # Common to all hosts
           home-manager.nixosModules.home-manager
           {
-	    home-manager.backupFileExtension = "bak";
+            home-manager.backupFileExtension = "bak";
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
             home-manager.users.jdb = import ./home.nix;
@@ -39,11 +39,11 @@
           nixos-wsl.nixosModules.default
           ./wsl-nixos/configuration.nix
         ];
-	locke-iso = mkHost [
+	      locke-iso = mkHost [
           "${nixpkgs}/nixos/modules/installer/cd-dvd/installation-cd-graphical-gnome.nix"
           # Provide an initial copy of the NixOS channel so that the user
           # doesn't need to run "nix-channel --update" first.
-	  # "${nixpkgs}/nixos/modules/installer/cd-dvd/channel.nix"
+	        # "${nixpkgs}/nixos/modules/installer/cd-dvd/channel.nix"
           ({ pkgs, modulesPath, ... }: {
             isoImage.squashfsCompression = "zstd";
             boot.zfs.forceImportRoot = false;

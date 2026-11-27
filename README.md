@@ -18,67 +18,6 @@ nix-shell -p git just \
   && just rebuild $".#{{host}}"
 ```
 
-## Commands
-
-All commands should be run from this directory.
-
-### Per-host setup
-
-#### Rescan the hardware configuration
-
-Important to do if the disk/filesystem setup changes, such as enabling LUKS.
-
-```sh
-sudo nixos-generate-config --show-hardware-config > <host>/hardware-configuration.nix
-```
-
-### Development and testing
-
-```sh
-# Build without changing the running machine.
-nix build .#<host>
-
-# Build & apply the configuration
-sudo nixos-rebuild switch --flake .#<host>
-
-# Update flakes
-nix flake update
-```
-
-### ISO Generation
-
-Generate:
-
-```sh
-nix build .#nixosConfigurations.locke-iso.config.system.build.isoImage
-```
-
-Test in a VM:
-
-```sh
-nix-shell -p qemu && \
-  qemu-system-x86_64 -enable-kvm -m 4G -cdrom $(ls -t result/iso/nixos-*.iso | head -n 1)
-```
-
-Write to a USB:
-
-```sh
-# Find your USB drive
-lsblk | grep '/media'
-
-# Unmount it
-sudo umount /dev/sdX*
-
-# Write the ISO to it
-sudo dd \
-    bs=4M conv=fsync oflag=direct status=progress \
-    if=$(ls -t result/iso/nixos-*.iso | head -n 1) \
-    of=/dev/sda                                      # typically sda
-```
-
-[Creating a live NixOS live CD](https://nixos.wiki/wiki/Creating_a_NixOS_live_CD)
-|[Creating bootable USB flash drive from a Terminal on Linux](https://nixos.org/manual/nixos/stable/#sec-booting-from-usb-linux)
-
 ### WSL-specific considerations
 
 This machine's `/etc/nixos` points to that checkout's `nixos` directory; the

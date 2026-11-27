@@ -84,7 +84,6 @@
   services.displayManager.autoLogin.user = "jdb";
 
   programs.firefox.enable = true;
-  programs.tmux.enable = true;
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
